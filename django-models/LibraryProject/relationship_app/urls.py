@@ -14,3 +14,9 @@ urlpatterns = [
     path(views.register, LogoutView.as_view(template_name='logout' ), LoginView.as_view(template_name='login')
     # Add other URLs for your app here
 ]
+
+urlpatterns = [
+    path('admin/', views.admin_view, name='admin_view'),
+    path('librarian/', views.librarian_view, name='librarian_view'),
+    path('member/', views.member_view, name='member_view'),
+]
