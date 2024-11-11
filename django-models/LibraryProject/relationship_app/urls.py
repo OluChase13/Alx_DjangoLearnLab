@@ -10,6 +10,7 @@ urlpatterns = [
 urlpatterns = [
     path('login/', CustomLoginView.as_view(), template_name='login'),
     path('logout/', CustomLogoutView.as_view(), template_name='logout'),
-    path('register/', register, name='register'),
+    path('register/', register, name='register'), 
+    path(views.register, LogoutView.as_view(template_name='logout' ), LoginView.as_view(template_name='login')
     # Add other URLs for your app here
 ]
