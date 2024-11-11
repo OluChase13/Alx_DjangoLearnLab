@@ -4,7 +4,7 @@ from relationship_app.models import Author, Book, Library, Librarian
 def get_books_by_author(author_name):
     try:
         author = Author.objects.get(name=author_name)
-        return author.books.all()  # Returns all books related to the author
+        return Book.objects.filter(author=author)
     except Author.DoesNotExist:
         return None
 
