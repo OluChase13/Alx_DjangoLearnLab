@@ -8,8 +8,8 @@ urlpatterns = [
 ]
 
 urlpatterns = [
-    path('login/', CustomLoginView.as_view(), name='login'),
-    path('logout/', CustomLogoutView.as_view(), name='logout'),
+    path('login/', CustomLoginView.as_view(), template_name='login'),
+    path('logout/', CustomLogoutView.as_view(), template_name='logout'),
     path('register/', register, name='register'),
     # Add other URLs for your app here
 ]
