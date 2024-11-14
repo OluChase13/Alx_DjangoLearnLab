@@ -4,8 +4,9 @@ from . import views
 urlpatterns = [
     path('booklist/',views.booklist, name = "booklist"),
     path('librarylist/<int:pk>/',views.LibraryListView.as_view(), name ="librarylist"),
-    path('adminsonly/', views.AdminOnlyView, name = "adminsonly"),
-    path('librarian/', views.LibrarianView, name = "librarian"),
+    path('adminsonly/', views.admin_view, name = "admin"),
+    path('librarian/', views.librarian_view, name = "librarian"),
+    path('member/', views.member_view, name = 'member'),
     path('login/', views.login.as_view(), name = 'login'),
     path('logout/',views.logout.as_view(), name = 'logout'),
     path('register/',views.register.as_view(), name = 'register'),

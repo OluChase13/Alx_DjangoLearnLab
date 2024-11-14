@@ -15,8 +15,6 @@ def booklist(request):
 
     return render(request, 'relationship_app/list_books.html',context=context)
 
-def 
-
 class LibraryListView(DetailView):
     model = Library
     template_name = 'relationship_app/librarylist.html'
@@ -36,16 +34,25 @@ def has_role(user, role):
 def is_admin(user):
     return has_role(user, "Admin")
 def is_librarian(user):
-    return has_role(user, "ibrarian")
+    return has_role(user, "Librarian")
+def is_member(user):
+    return has_role(user, "Member")
 
-
+# Views for Admin users
 @user_passes_test(is_admin)
-def AdminOnlyView(request):
-    return HttpResponse("<h1>Welcome Admin!</h1>")
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
 
+# View for Librarian users
 @user_passes_test(is_librarian)
-def LibrarianView(request):
-    return HttpResponse("<h1>Welcome Librarian!</h1>")
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+# View for Member users
+@user_passes_test(is_member)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
+
 
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
