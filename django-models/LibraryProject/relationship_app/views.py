@@ -1,68 +1,72 @@
-from django.shortcuts import render, redirect
-from .models import Book
-from django.views.generic.detail import DetailView
-from .models import Library
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth.views import LoginView, LogoutView
-from django.urls import reverse_lazy
-from django.contrib.auth.decorators import user_passes_test
-from .models import UserProfile
-from django.contrib.auth.decorators import user_passes_test
-from django.http import HttpResponseForbidden
+from typing import Any
+from django.shortcuts import render
+from django.views.generic import ListView, DetailView, CreateView, TemplateView
 
+from django.http import HttpResponse
+from .models import Author, Book, Librarian, Library
 
-# Function-based view for listing all books
-def list_books(request):
+from django.contrib.auth.models import User
+
+# Create your views here.
+
+def booklist(request):
     books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
+    context = {'books':books}
 
-# Class-based view for library details
-class LibraryDetailView(DetailView):
+    return render(request, 'relationship_app/list_books.html',context=context)
+
+class LibraryListView(DetailView):
     model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'
+    template_name = 'relationship_app/librarylist.html'
 
-# Login view
-class CustomLoginView(LoginView):
-    template_name = 'login.html'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        library = self.get_object()
+        context['books'] = library.books.all()
+        return context
 
-# Logout view
-class CustomLogoutView(LogoutView):
-    template_name = 'logout.html'
 
-# Register view
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')  # Redirect to homepage after registration
-    else:
-        form = UserCreationForm()
-    return render(request, 'relationship_app/register.html', {'form': form})
+from django.contrib.auth.decorators import login_required, user_passes_test, permission_required
+from .models import UserProfile
 
-# Helper functions to check user role
+def has_role(user, role):
+    return UserProfile.objects.filter(user=user.id, role=role).exists()
 def is_admin(user):
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Admin'
-
+    return has_role(user, "Admin")
 def is_librarian(user):
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Librarian'
+    return has_role(user, "ibrarian")
 
-def is_member(user):
-    return user.is_authenticated and hasattr(user, 'userprofile') and user.userprofile.role == 'Member'
 
-# Views for each role
 @user_passes_test(is_admin)
-def Admin(request):
-    return render(request, 'relationship_app/admin_view.html')
+def AdminOnlyView(request):
+    return HttpResponse("<h1>Welcome Admin!</h1>")
 
 @user_passes_test(is_librarian)
-def librarian_view(request):
-    return render(request, 'relationship_app/librarian_view.html')
+def LibrarianView(request):
+    return HttpResponse("<h1>Welcome Librarian!</h1>")
 
-@user_passes_test(is_member)
-def member_view(request):
-    return render(request, 'relationship_app/member_view.html')
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
 
+class register(CreateView): 
+    form_class = UserCreationForm()
+    form_class = UserCreationForm
+    success_url = reverse_lazy('login')
+    template_name = 'relationship_app/register.html'
+
+class ProfileView(TemplateView):
+    template_name = 'relationship_app/profile.html'
+    # user = self.get_object
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        # user = self.get_object()
+        context["user"] = self.request.user
+        return context
+    
+from django.contrib.auth.views import LoginView, LogoutView
+
+class login(LoginView):
+    template_name = 'relationship_app/login.html'
+
+class logout(LogoutView):
+    template_name = 'relationship_app/logout.html'
