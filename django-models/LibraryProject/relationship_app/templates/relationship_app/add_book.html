@@ -1,0 +1,21 @@
+<!-- templates/relationship_app/add_book.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Book</title>
+</head>
+<body>
+    <h1>Add a New Book</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Title:</label>
+        <input type="text" name="title">
+        <label>Author:</label>
+        <input type="text" name="author">
+        <label>Published Date:</label>
+        <input type="date" name="published_date">
+        <button type="submit">Add Book</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!-- templates/relationship_app/edit_book.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Book</title>
+</head>
+<body>
+    <h1>Edit Book</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label>Title:</label>
+        <input type="text" name="title" value="{{ book.title }}">
+        <label>Author:</label>
+        <input type="text" name="author" value="{{ book.author }}">
+        <label>Published Date:</label>
+        <input type="date" name="published_date" value="{{ book.published_date }}">
+        <button type="submit">Save Changes</button>
+    </form>
+</body>
+</html>
