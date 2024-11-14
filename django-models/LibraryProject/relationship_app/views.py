@@ -15,6 +15,8 @@ def booklist(request):
 
     return render(request, 'relationship_app/list_books.html',context=context)
 
+def 
+
 class LibraryListView(DetailView):
     model = Library
     template_name = 'relationship_app/librarylist.html'
