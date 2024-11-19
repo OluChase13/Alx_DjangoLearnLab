@@ -1,13 +1,13 @@
 from typing import Any
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 from LibraryProject import settings
 
 # # Create your models here.
 
 #Creating a new Custom User Model and it's manager
-class CustomUserManager(UserManager):
+class CustomUserManager(BaseUserManager):
     def create_user(self, username: str, email: str | None = ..., password: str | None = ...,**extra_fields: Any) -> Any:
         # if not date_of_birth:
         #     raise ValueError("The date_of_birth field is required.")
