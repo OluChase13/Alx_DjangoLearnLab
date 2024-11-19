@@ -20,25 +20,35 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-859=ugt0onsaxb&mx7^9-8r*-c4!q!5+6#l#+n&r5@k%!x=81+'
+# SECRET_KEY = 'NLpdFwa8s5Z0DgV7cgDvl6Q2DklovS_C5V833ZxfaKcElmosaRbK8F-GqlXs2KEZQkfQ2-6p8w'
+from decouple import config
+SECRET_KEY = config('DJANGO_SECRET_KEY', default='fallback-default-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1'
+]
 
+#using the new custom user
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'bookshelf.apps.BookshelfConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'bookshelf.apps.BookshelfConfig',
-    'relationship_app.apps.RelationshipAppConfig',
+    # 'relationship_app.apps.RelationshipAppConfig', #not required in this project so I will ignore all the files in that directory
+    'csp',
+    'sslserver'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +59,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware'
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -124,4 +135,21 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+#added security for mock project
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+#ONLY USE IN DEPLOYMENT
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True  # Include subdomains in HSTS
+SECURE_HSTS_PRELOAD = True  # Allow site to be preloaded by browsers
+
+
+#csp settings
+CSP_DEFAULT_SRC = ("'self'",)  # Allow content only from the same origin
