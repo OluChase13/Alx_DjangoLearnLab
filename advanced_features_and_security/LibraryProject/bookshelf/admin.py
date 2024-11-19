@@ -14,4 +14,30 @@ class BookAdmin(admin.ModelAdmin):
     search_fields = ('title', 'author')
 
 #registering the new CustomUserModel
-admin.site.register(CustomUser, UserAdmin)
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from .models import CustomUser
+
+class CustomUserAdmin(UserAdmin):
+    # Specify the model
+    model = CustomUser
+
+    # Add custom fields to the user detail view
+    fieldsets = UserAdmin.fieldsets + (
+        ('Additional Information', {
+            'fields': ('date_of_birth', 'profile_photo'),
+        }),
+    )
+
+    # Add custom fields to the user creation form
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Additional Information', {
+            'fields': ('date_of_birth', 'profile_photo'),
+        }),
+    )
+
+    # Columns to display in the user list view
+    list_display = ['username', 'email', 'date_of_birth', 'is_staff']
+
+# Register the CustomUser model with the customized admin class
+admin.site.register(CustomUser, CustomUserAdmin)
