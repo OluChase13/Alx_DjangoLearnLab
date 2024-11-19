@@ -17,3 +17,13 @@ class MyUserCreationForm(UserCreationForm):
         class Meta:
             model = get_user_model()
             fields = ['username', 'date_of_birth']
+
+
+from django import forms
+
+class ExampleForm(forms.Form):
+    search_field = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}),
+        label="Search"
+    )

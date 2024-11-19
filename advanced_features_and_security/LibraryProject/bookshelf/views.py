@@ -71,3 +71,21 @@ class LoginView(LoginView):
 class LogoutView(LogoutView):
     """User logout view."""
     template_name = 'bookshelf/logout.html'
+
+from django.shortcuts import render
+from .forms import ExampleForm
+from .models import YourModel
+
+def example_view(request):
+    if request.method == 'POST':
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Safely access form data
+            search_query = form.cleaned_data['search_field']
+
+            # Use Django ORM to query the database securely
+            results = YourModel.objects.filter(name__icontains=search_query)
+            return render(request, 'results.html', {'results': results})
+    else:
+        form = ExampleForm()
+    return render(request, 'example_form.html', {'form': form})
