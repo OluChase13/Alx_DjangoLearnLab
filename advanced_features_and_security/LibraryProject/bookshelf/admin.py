@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Book
+from django.contrib.auth.admin import UserAdmin
+from .models import Author, Book, CustomUser, Review
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
@@ -12,3 +13,5 @@ class BookAdmin(admin.ModelAdmin):
     # Search capability by title and author
     search_fields = ('title', 'author')
 
+#registering the new CustomUserModel
+admin.site.register(CustomUser, UserAdmin)

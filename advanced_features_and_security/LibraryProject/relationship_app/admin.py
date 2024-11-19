@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from .models import Author, Book, Librarian, Library, UserProfile
 
 # Define a custom admin class to control how models appear in the admin interface
@@ -38,3 +38,4 @@ class LibraryAdmin(RelationAdmin):
 class UserProfileAdmin(RelationAdmin):
     list_display = ("role", "user")
     list_filter = ('role',)
+
