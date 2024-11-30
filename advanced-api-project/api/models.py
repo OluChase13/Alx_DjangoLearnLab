@@ -14,3 +14,4 @@ class Book(models.Model): # class Book model
 
     def __str__(self):
         return self.title
+    
