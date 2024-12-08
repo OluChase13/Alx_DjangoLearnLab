@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment
 from django.contrib.auth.decorators import login_required, UserPassesTestMixin
+from django.db.models import Q
 
 
 # Handles user registration
@@ -126,3 +127,17 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         comment = self.get_object()
         return self.request.user == comment.author
+
+
+def search_posts(request):
+    query = request.GET.get('q')
+    results = Post.objects.filter(
+        Q(title__icontains=query) |
+        Q(content__icontains=query) |
+        Q(tags__name__icontains=query)
+    ).distinct()
+    return render(request, 'blog/search_results.html', {'query': query, 'results': results})
+
+def posts_by_tag(request, tag_name):
+    posts = Post.objects.filter(tags__name__iexact=tag_name)
+    return render(request, 'blog/posts_by_tag.html', {'tag_name': tag_name, 'posts': posts})
