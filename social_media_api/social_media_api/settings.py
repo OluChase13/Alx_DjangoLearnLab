@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1o1#m7e+^6t@@c#-0xge$un@20t!$o88c)__g-+a)2_mk+4)ca'
+SECRET_KEY = 'django-insecure-wu!h$8k(xzsbcad!*h4x%&k6ex+khk=$wkkhnc(8e=76_1##@3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -127,8 +127,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
-}
