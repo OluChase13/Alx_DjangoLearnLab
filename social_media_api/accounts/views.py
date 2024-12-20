@@ -11,7 +11,7 @@ from posts.models import Post
 from posts.serializers import PostSerializer  
 
 
-class RegisterView(APIView):
+class RegisterView(generics.GenericAPIView):
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
@@ -21,7 +21,7 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
+class LoginView(generics.GenericAPIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
