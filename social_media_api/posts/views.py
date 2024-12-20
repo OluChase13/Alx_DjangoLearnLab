@@ -1,12 +1,14 @@
-from rest_framework import viewsets, permissions, filters, generics
-from .models import Post, Comment
+from rest_framework import viewsets, permissions, filters, generics, status
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from .permissions import IsAuthorOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import get_object_or_404
+from notifications.models import Notification
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -49,53 +51,42 @@ class FeedView(generics.GenericAPIView):
         serializer = PostSerializer(posts, many=True)
         return Response(serializer.data)
     
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from .models import Post, Like
-from notifications.models import Notification
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def like_post(request, pk):
     """
-    Like a post.
+    Allows a user to like a post.
     """
-    try:
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
+    post = get_object_or_404(Post, pk=pk)
+    user = request.user
+    like, created = Like.objects.get_or_create(user=user, post=post)
 
-    like, created = Like.objects.get_or_create(user=request.user, post=post)
+    if not created:
+        return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
-    if created:
-        # Create a notification for the post's author
-        if post.author != request.user:
-            Notification.objects.create(
-                recipient=post.author,
-                actor=request.user,
-                verb='liked',
-                target=post
-            )
-        return Response({"detail": "Post liked."}, status=status.HTTP_201_CREATED)
-    else:
-        return Response({"detail": "You already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
+    # Create a notification for the post's author
+    if post.author != user:
+        Notification.objects.create(
+            recipient=post.author,
+            actor=user,
+            verb="liked your post",
+            target=post
+        )
 
-@api_view(['DELETE'])
+    return Response({"detail": "Post liked successfully."}, status=status.HTTP_201_CREATED)
+
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def unlike_post(request, pk):
     """
-    Unlike a post.
+    Allows a user to unlike a post.
     """
+    post = get_object_or_404(Post, pk=pk)
+    user = request.user
     try:
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return Response({"detail": "Post not found."}, status=status.HTTP_404_NOT_FOUND)
-
-    like = Like.objects.filter(user=request.user, post=post).first()
-    if like:
+        like = Like.objects.get(user=user, post=post)
         like.delete()
-        return Response({"detail": "Post unliked."}, status=status.HTTP_200_OK)
-    else:
+        return Response({"detail": "Post unliked successfully."}, status=status.HTTP_200_OK)
+    except Like.DoesNotExist:
         return Response({"detail": "You have not liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-
