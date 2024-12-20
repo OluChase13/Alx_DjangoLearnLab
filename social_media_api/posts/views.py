@@ -58,9 +58,9 @@ def like_post(request, pk):
     """
     Allows a user to like a post.
     """
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)
     user = request.user
-    like, created = Like.objects.get_or_create(user=user, post=post)
+    like, created = Like.objects.get_or_create(user=request.user, post=post)
 
     if not created:
         return Response({"detail": "You have already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
@@ -82,10 +82,10 @@ def unlike_post(request, pk):
     """
     Allows a user to unlike a post.
     """
-    post = get_object_or_404(Post, pk=pk)
+    post = generics.get_object_or_404(Post, pk=pk)
     user = request.user
     try:
-        like = Like.objects.get(user=user, post=post)
+        like = Like.objects.get(user=request.user, post=post)
         like.delete()
         return Response({"detail": "Post unliked successfully."}, status=status.HTTP_200_OK)
     except Like.DoesNotExist:
