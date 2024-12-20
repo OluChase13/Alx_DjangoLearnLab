@@ -5,6 +5,7 @@ from rest_framework import status, permissions, generics
 from django.contrib.auth import authenticate, get_user_model
 from .serializers import UserRegistrationSerializer, LoginSerializer
 from rest_framework.decorators import api_view
+from .models import CustomUser
 
 class RegisterView(APIView):
     def post(self, request):
@@ -33,7 +34,7 @@ class LoginView(APIView):
 
 @api_view(['POST'])
 def follow_user(request, user_id):
-    user_to_follow = get_user_model().objects.get(id=user_id)
+    user_to_follow = CustomUser.objects.get(id=user_id)
     if user_to_follow == request.user:
         return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -42,7 +43,7 @@ def follow_user(request, user_id):
 
 @api_view(['POST'])
 def unfollow_user(request, user_id):
-    user_to_unfollow = get_user_model().objects.get(id=user_id)
+    user_to_unfollow = CustomUser.objects.get(id=user_id)
     if user_to_unfollow == request.user:
         return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -51,7 +52,7 @@ def unfollow_user(request, user_id):
 
 
 from rest_framework.exceptions import NotFound
-from .models import CustomUser
+
 
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
