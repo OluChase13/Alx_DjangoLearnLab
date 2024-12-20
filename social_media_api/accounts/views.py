@@ -2,8 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status, permissions, generics
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from .serializers import UserRegistrationSerializer, LoginSerializer
+from rest_framework.decorators import api_view
 
 class RegisterView(APIView):
     def post(self, request):
@@ -29,36 +30,25 @@ class LoginView(APIView):
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-from rest_framework.decorators import api_view
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 @api_view(['POST'])
 def follow_user(request, user_id):
-    try:
-        user_to_follow = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    user_to_follow = get_user_model().objects.get(id=user_id)
     if user_to_follow == request.user:
-        return Response({"detail": "You cannot follow yourself"}, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+    
     request.user.following.add(user_to_follow)
-    return Response({"detail": "Followed successfully"}, status=status.HTTP_200_OK)
+    return Response({"detail": f"Now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def unfollow_user(request, user_id):
-    try:
-        user_to_unfollow = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-
+    user_to_unfollow = get_user_model().objects.get(id=user_id)
     if user_to_unfollow == request.user:
-        return Response({"detail": "You cannot unfollow yourself"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
     request.user.following.remove(user_to_unfollow)
-    return Response({"detail": "Unfollowed successfully"}, status=status.HTTP_200_OK)
+    return Response({"detail": f"Unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
+
 
 from rest_framework.exceptions import NotFound
 from .models import CustomUser
