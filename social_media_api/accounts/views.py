@@ -38,7 +38,7 @@ class LoginView(APIView):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def follow_user(request, user_id):
     """
     Allows the current user to follow another user.
@@ -56,7 +56,7 @@ def follow_user(request, user_id):
     return Response({"detail": f"You are now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def unfollow_user(request, user_id):
     """
     Allows the current user to unfollow another user.
@@ -74,7 +74,7 @@ def unfollow_user(request, user_id):
     return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def user_feed(request):
     """
     Returns a feed of posts from users the current user follows.
@@ -86,7 +86,7 @@ def user_feed(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([permissions.IsAuthenticated])
 def list_users(request):
     """
     Lists all users for testing and discovery purposes.
