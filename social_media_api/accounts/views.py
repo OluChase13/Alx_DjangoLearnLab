@@ -32,27 +32,33 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+from .models import CustomUser  # Import CustomUser directly
+
 @api_view(['POST'])
 def follow_user(request, user_id):
-    user_to_follow = CustomUser.objects.all
-    if user_to_follow == request.user:
+    current_user = request.user
+    user_to_follow = CustomUser.objects.get(id=user_id)  # Use CustomUser here
+    
+    if user_to_follow == current_user:
         return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
     
-    request.user.following.add(user_to_follow)
-    return Response({"detail": f"Now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
+    current_user.following.add(user_to_follow)
+    return Response({"detail": f"You are now following {user_to_follow.username}."}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def unfollow_user(request, user_id):
-    user_to_unfollow = CustomUser.objects.all
-    if user_to_unfollow == request.user:
+    current_user = request.user
+    user_to_unfollow = CustomUser.objects.get(id=user_id)  # Use CustomUser here
+    
+    if user_to_unfollow == current_user:
         return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
-    request.user.following.remove(user_to_unfollow)
-    return Response({"detail": f"Unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
+    current_user.following.remove(user_to_unfollow)
+    return Response({"detail": f"You have unfollowed {user_to_unfollow.username}."}, status=status.HTTP_200_OK)
 
 
 from rest_framework.exceptions import NotFound
-
+from .models import CustomUser
 
 class FollowUserView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
