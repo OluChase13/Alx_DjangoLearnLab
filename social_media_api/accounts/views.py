@@ -34,7 +34,7 @@ class LoginView(APIView):
 
 @api_view(['POST'])
 def follow_user(request, user_id):
-    user_to_follow = CustomUser.objects.get(id=user_id)
+    user_to_follow = CustomUser.objects.all
     if user_to_follow == request.user:
         return Response({"detail": "You cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -43,7 +43,7 @@ def follow_user(request, user_id):
 
 @api_view(['POST'])
 def unfollow_user(request, user_id):
-    user_to_unfollow = CustomUser.objects.get(id=user_id)
+    user_to_unfollow = CustomUser.objects.all
     if user_to_unfollow == request.user:
         return Response({"detail": "You cannot unfollow yourself."}, status=status.HTTP_400_BAD_REQUEST)
 
